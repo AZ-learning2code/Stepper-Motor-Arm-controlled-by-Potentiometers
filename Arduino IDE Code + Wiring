@@ -1,24 +1,15 @@
-// Connection Details
-// Two ULN2003 driver boards are used, each with its own stepper motor connected.
+// Wiring Summary
 
-// Board 1 control pins:
-// IN1–IN4 -> Arduino digital pins 13, 12, 11, 10
+// Stepper Driver Boards (ULN2003)
+// Board1 IN1–IN4 -> Arduino D13, D12, D11, D10
+// Board2 IN1–IN4 -> Arduino D9, D8, D7, D6
+// Both Boards: VCC -> 5V motor supply, GND -> shared GND (power supply + Arduino)
 
-// Board 2 control pins:
-// IN1–IN4 -> Arduino digital pins 9, 8, 7, 6
+// Potentiometers
+// Pot1: VCC -> Arduino 5V, GND -> Arduino GND, Signal -> A0
+// Pot2: VCC -> Arduino 5V, GND -> Arduino GND, Signal -> A1
 
-// Power for both ULN2003 boards:
-// VCC -> 5V output of the power supply module
-// GND -> connected to both the power supply module GND and Arduino GND (common ground)
-
-// Potentiometer wiring:
-// Both potentiometers:
-//   VCC -> Arduino 5V
-//   GND -> Arduino GND
-
-// Potentiometer signal pins:
-// Potentiometer 1 signal -> Arduino A0
-// Potentiometer 2 signal -> Arduino A1
+// Note: All grounds (Arduino + motor supply) must be connected together.
 
 
 
