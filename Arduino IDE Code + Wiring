@@ -1,0 +1,90 @@
+// Connection Details
+// Two ULN2003 driver boards are used, each with its own stepper motor connected.
+
+// Board 1 control pins:
+// IN1–IN4 -> Arduino digital pins 13, 12, 11, 10
+
+// Board 2 control pins:
+// IN1–IN4 -> Arduino digital pins 9, 8, 7, 6
+
+// Power for both ULN2003 boards:
+// VCC -> 5V output of the power supply module
+// GND -> connected to both the power supply module GND and Arduino GND (common ground)
+
+// Potentiometer wiring:
+// Both potentiometers:
+//   VCC -> Arduino 5V
+//   GND -> Arduino GND
+
+// Potentiometer signal pins:
+// Potentiometer 1 signal -> Arduino A0
+// Potentiometer 2 signal -> Arduino A1
+
+
+
+int stepsPerRev = 4096; // half-steps for 28BYJ-48
+
+// Motor pins
+int m1[4] = {13,12,11,10};
+int m2[4] = {9,8,7,6};
+
+// Half-step sequence (8 steps)
+int seq[8][4] = {
+  {1,0,0,0},
+  {1,1,0,0},
+  {0,1,0,0},
+  {0,1,1,0},
+  {0,0,1,0},
+  {0,0,1,1},
+  {0,0,0,1},
+  {1,0,0,1}
+};
+
+int stepIndex1 = 0;
+int stepIndex2 = 0;
+
+long pos1 = 0;
+long pos2 = 0;
+
+void setup() {
+  for(int i=0;i<4;i++){
+    pinMode(m1[i],OUTPUT);
+    pinMode(m2[i],OUTPUT);
+  }
+}
+
+void loop() {
+  int pot1 = analogRead(A0);
+  int pot2 = analogRead(A1);
+
+  long target1 = map(pot1,0,1023,0,stepsPerRev);
+  long target2 = map(pot2,0,1023,0,stepsPerRev);
+
+  moveMotor(m1,&pos1,target1,&stepIndex1);
+  moveMotor(m2,&pos2,target2,&stepIndex2);
+}
+
+// Move motor toward target position
+void moveMotor(int motorPins[4], long *pos, long target, int *stepIndex){
+  if(*pos < target){
+    stepForward(motorPins,stepIndex);
+    (*pos)++;
+  }
+  else if(*pos > target){
+    stepBackward(motorPins,stepIndex);
+    (*pos)--;
+  }
+  delay(2); // adjust for speed
+}
+
+void stepForward(int pins[4], int *index){
+  *index = (*index + 1) % 8;
+  for(int i=0;i<4;i++)
+    digitalWrite(pins[i], seq[*index][i]);
+}
+
+void stepBackward(int pins[4], int *index){
+  *index = (*index + 7) % 8; // equivalent to -1 modulo 8
+  for(int i=0;i<4;i++)
+    digitalWrite(pins[i], seq[*index][i]);
+}
